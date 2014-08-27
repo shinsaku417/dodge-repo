@@ -51,6 +51,10 @@
     BOOL _startTripleBot;
     CCLabelTTF *_tripleBotLabel;
     
+    BOOL _tripleTop;
+    BOOL _startTripleTop;
+    CCLabelTTF *_tripleTopLabel;
+    
     // *********************
 }
 
@@ -76,6 +80,12 @@
     
     _fastTop = false;
     _startFastTop = false;
+    
+    _tripleBot = false;
+    _startTripleBot = false;
+    
+    _tripleTop = false;
+    _startTripleTop = false;
     // ************************
     
     
@@ -146,6 +156,48 @@
         shuriken2.physicsBody.velocity = ccp(-150,0);
     }
     
+    if (_tripleTop) {
+        CCSprite *shuriken2 = (CCSprite *)[CCBReader load:@"Shuriken"];
+        CCSprite *shuriken3 = (CCSprite *)[CCBReader load:@"Shuriken"];
+        shuriken2.positionType = CCPositionTypeNormalized;
+        shuriken3.positionType = CCPositionTypeNormalized;
+        int rng = arc4random() % 4;
+        switch (rng) {
+            case 0:
+                shuriken.position = ccp(1, 0.55);
+                shuriken2.position = ccp(1, 0.75);
+                shuriken3.position = ccp(1, 0.95);
+                break;
+            case 1:
+                shuriken.position = ccp(1, 0.65);
+                shuriken2.position = ccp(1, 0.85);
+                shuriken3.position = ccp(1, 0.95);
+                break;
+            case 2:
+                shuriken.position = ccp(1, 0.65);
+                shuriken2.position = ccp(1, 0.75);
+                shuriken3.position = ccp(1, 0.85);
+                break;
+            case 3:
+                shuriken.position = ccp(1, 0.55);
+                shuriken2.position = ccp(1, 0.65);
+                shuriken3.position = ccp(1, 0.95);
+                break;
+            default:
+                shuriken.position = ccp(1, 0.55);
+                shuriken2.position = ccp(1, 0.75);
+                shuriken3.position = ccp(1, 0.85);
+        }
+        [_physicsNode addChild:shuriken2];
+        [shuriken2.physicsBody applyAngularImpulse:1000];
+        shuriken2.physicsBody.velocity = ccp(-200,0);
+        
+        [_physicsNode addChild:shuriken3];
+        [shuriken3.physicsBody applyAngularImpulse:1000];
+        shuriken3.physicsBody.velocity = ccp(-250,0);
+    }
+
+    
     [_physicsNode addChild:shuriken];
     [shuriken.physicsBody applyAngularImpulse:900];
     if (_fastTop) {
@@ -201,6 +253,47 @@
         [_physicsNode addChild:shuriken2];
         [shuriken2.physicsBody applyAngularImpulse:1000];
         shuriken2.physicsBody.velocity = ccp(0,-200);
+    }
+    
+    if (_tripleBot) {
+        CCSprite *shuriken2 = (CCSprite *)[CCBReader load:@"Shuriken"];
+        CCSprite *shuriken3 = (CCSprite *)[CCBReader load:@"Shuriken"];
+        shuriken2.positionType = CCPositionTypeNormalized;
+        shuriken3.positionType = CCPositionTypeNormalized;
+        int rng = arc4random() % 4;
+        switch (rng) {
+            case 0:
+                shuriken.position = ccp(0.1, 0.475);
+                shuriken2.position = ccp(0.5, 0.475);
+                shuriken3.position = ccp(0.9, 0.475);
+                break;
+            case 1:
+                shuriken.position = ccp(0.1, 0.475);
+                shuriken2.position = ccp(0.3, 0.475);
+                shuriken3.position = ccp(0.7, 0.475);
+                break;
+            case 2:
+                shuriken.position = ccp(0.3, 0.475);
+                shuriken2.position = ccp(0.7, 0.475);
+                shuriken3.position = ccp(0.9, 0.475);
+                break;
+            case 3:
+                shuriken.position = ccp(0.1, 0.475);
+                shuriken2.position = ccp(0.5, 0.475);
+                shuriken3.position = ccp(0.7, 0.475);
+                break;
+            default:
+                shuriken.position = ccp(0.3, 0.475);
+                shuriken2.position = ccp(0.5, 0.475);
+                shuriken3.position = ccp(0.9, 0.475);
+        }
+        [_physicsNode addChild:shuriken2];
+        [shuriken2.physicsBody applyAngularImpulse:1000];
+        shuriken2.physicsBody.velocity = ccp(0,-155);
+        
+        [_physicsNode addChild:shuriken3];
+        [shuriken3.physicsBody applyAngularImpulse:1000];
+        shuriken3.physicsBody.velocity = ccp(0,-165);
     }
 
     
@@ -275,6 +368,10 @@
         [self startDoubleBoth];
     } else if (_startFastTop) {
         [self startFastTop];
+    } else if (_startTripleBot) {
+        [self startTripleBot];
+    } else if (_startTripleTop) {
+        [self startTripleTop];
     }
 }
 
@@ -307,6 +404,21 @@
     _doubleTop = false;
     _doubleBot = false;
     _startFastTop = false;
+}
+
+- (void)startTripleBot {
+    [_tripleBotLabel removeFromParent];
+    _tripleBot = true;
+    [self startSchedule];
+    _fastTop = false;
+    _startTripleBot = false;
+}
+
+- (void)startTripleTop {
+    [_tripleTopLabel removeFromParent];
+    _tripleTop = true;
+    [self startSchedule];
+    _startTripleTop = false;
 }
 
 // ***************************************************************
@@ -360,6 +472,7 @@
     _score++;
     _scoreLabel.string = [NSString stringWithFormat:@"%i", _score];
     
+    // Difficulty Lv 2: Tutorial on bottom side
     if (_score == 18) {
         [[[CCDirector sharedDirector] view] removeGestureRecognizer:_swipeUp];
         [[[CCDirector sharedDirector] view] removeGestureRecognizer:_swipeDown];
@@ -376,13 +489,17 @@
         [self unschedule:@selector(spawnShurikenBot)];
     }
     
+    // Difficulty Lv 3: Both sides
     else if (_score == 36) {
-        [self unschedule:@selector(timer)];
+//        [self unschedule:@selector(timer)];
         [_coverBot removeFromParent];
-        _moveBoth.visible = true;
-        _both = true;
+//        _moveBoth.visible = true;
+//        _both = true;
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeUp];
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeDown];
+        [self unschedule:@selector(timer)];
+        _startTripleTop = true;
+        _tripleTopLabel.visible = true;
     }
     
     else if (_score == 53) {
@@ -390,6 +507,7 @@
         [self unschedule:@selector(spawnShurikenBot)];
     }
     
+    // Difficulty Lv 4: Double shuriken on the top side
     else if (_score == 54) {
         [self unschedule:@selector(timer)];
         _startDouble = true;
@@ -401,30 +519,48 @@
         [self unschedule:@selector(spawnShurikenBot)];
     }
     
+    // Difficulty Lv 5: Double shuriken on both sides
     else if (_score == 72) {
         [self unschedule:@selector(timer)];
-        
         _startDoubleBoth = true;
-        
         _doubleBothLabel.visible = true;
-    } else if (_score == 89) {
+    }
+    
+    else if (_score == 89) {
         [self unschedule:@selector(spawnShurikenTop)];
         [self unschedule:@selector(spawnShurikenBot)];
-        
-        _doubleBothLabel.visible = true;
-    } else if (_score == 90) {
+    }
+    
+    // Difficulty Lv 6: Fast single shuriken on the top side, 1 regular shuriken on the bot side
+    else if (_score == 90) {
         [self unschedule:@selector(timer)];
-        
         _startFastTop = true;
-        
         _fastTopLabel.visible = true;
-    } else if (_score == 107) {
+    }
+    
+    else if (_score == 125) {
         [self unschedule:@selector(spawnShurikenTop)];
         [self unschedule:@selector(spawnShurikenBot)];
+    }
+    
+    // Difficulty Lv 7: Triple shuriken on the bot side, 1 regular shuriken on the top side
+    else if (_score == 126) {
+        [self unschedule:@selector(timer)];
+        _startTripleBot = true;
+        _tripleBotLabel.visible = true;
         
-        _startFastTop = true;
-        
-        _fastTopLabel.visible = true;
+    }
+    
+    else if (_score == 161) {
+        [self unschedule:@selector(spawnShurikenTop)];
+        [self unschedule:@selector(spawnShurikenBot)];
+    }
+    
+    // Difficulty Lv 8: Triple shuriken on the both sides
+    else if (_score == 162) {
+        [self unschedule:@selector(timer)];
+        _startTripleTop = true;
+        _tripleTopLabel.visible = true;
     }
 }
 
