@@ -22,7 +22,7 @@
     NSUserDefaults *gameState = [NSUserDefaults standardUserDefaults];
     
     _scoreLabel.string = [NSString stringWithFormat:@"%li", (long)[gameState integerForKey:@"score"]];
-    _scoreLabel.string = [NSString stringWithFormat:@"%li", (long)[gameState integerForKey:@"highscore"]];
+    _highscoreLabel.string = [NSString stringWithFormat:@"%li", (long)[gameState integerForKey:@"highscore"]];
 }
 
 - (void)again {
