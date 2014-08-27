@@ -9,48 +9,62 @@
 #import "GamePlay.h"
 
 @implementation GamePlay {
+    // Physics Node: Where all physics things occur
     CCPhysicsNode *_physicsNode;
     
+    // Green and Blue balloons
     CCSprite *_green;
     CCSprite *_blue;
     
+    // Time = score
     CCLabelTTF *_scoreLabel;
     int _score;
     
+    // First shots in both tutorial (top and bot) will aim the balloon
     BOOL _firstTop;
     BOOL _firstBot;
     
+    // Covers bottom half then top half for tutorials on moving blue/green balloons
     CCNodeColor *_coverBot;
     
+    // 4 Swipe recognizers
     UISwipeGestureRecognizer *_swipeUp;
     UISwipeGestureRecognizer *_swipeDown;
     UISwipeGestureRecognizer *_swipeLeft;
     UISwipeGestureRecognizer *_swipeRight;
     
     // **Difficulty Modes**
+    
+    // Tutorial: Teaches how to move green and blue balloons
     BOOL _tutorial;
     CCLabelTTF *_moveGreen;
     CCLabelTTF *_moveBlue;
     
+    // Shuriken on both sides
     BOOL _both;
     CCLabelTTF *_moveBoth;
     
+    // 2 Shurikens on top side, 1 shuriken on bot side
     BOOL _doubleTop;
     BOOL _startDouble;
     CCLabelTTF *_doubleTopLabel;
     
+    // 2 Shurikens on both sides
     BOOL _doubleBot;
     BOOL _startDoubleBoth;
     CCLabelTTF *_doubleBothLabel;
     
+    // 1 fast shuriken on top side, 1 regular shuriken on bot side
     BOOL _fastTop;
     BOOL _startFastTop;
     CCLabelTTF *_fastTopLabel;
     
+    // 3 Shurikens on top side, 1 shuriken on bot side
     BOOL _tripleBot;
     BOOL _startTripleBot;
     CCLabelTTF *_tripleBotLabel;
     
+    // Max Difficulty: 3 Shurikens on both sides
     BOOL _tripleTop;
     BOOL _startTripleTop;
     CCLabelTTF *_tripleTopLabel;
@@ -61,6 +75,7 @@
 - (void)onEnter {
     [super onEnter];
     
+    // Enable interaction and collision
     self.userInteractionEnabled = true;
     _physicsNode.collisionDelegate = self;
     
@@ -108,14 +123,20 @@
     _swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
 }
 
+// Spawn shuriken on the top side
 - (void)spawnShurikenTop {
+    // New shuriken
     CCSprite *shuriken = (CCSprite *)[CCBReader load:@"Shuriken"];
     shuriken.positionType = CCPositionTypeNormalized;
     
+    // First shot in the tutorial is aimed towards the balloon
     if (_firstTop) {
         shuriken.position = ccp(1, _green.position.y);
         _firstTop = false;
     } else {
+        // Generate random shuriken
+        // 66% to aim at balloon
+        // 16% to aim one spot above or below balloon
         int rng = arc4random() % 6;
         if (0 <= rng <= 3) {
             shuriken.position = ccp(1, _green.position.y);
@@ -136,6 +157,7 @@
         }
     }
     
+    // Shoot 2 shurikens
     if (_doubleTop) {
         CCSprite *shuriken2 = (CCSprite *)[CCBReader load:@"Shuriken"];
         shuriken2.positionType = CCPositionTypeNormalized;
@@ -156,6 +178,7 @@
         shuriken2.physicsBody.velocity = ccp(-150,0);
     }
     
+    // Shoot 3 shurikens
     if (_tripleTop) {
         CCSprite *shuriken2 = (CCSprite *)[CCBReader load:@"Shuriken"];
         CCSprite *shuriken3 = (CCSprite *)[CCBReader load:@"Shuriken"];
@@ -200,6 +223,7 @@
     
     [_physicsNode addChild:shuriken];
     [shuriken.physicsBody applyAngularImpulse:900];
+    // Increase velocity when shooting fast shuriken
     if (_fastTop) {
         shuriken.physicsBody.velocity = ccp(-350,0);
     } else {
@@ -207,6 +231,7 @@
     }
 }
 
+// Spawn shuriken on the bot side => code similar to spawnShurikenTop
 - (void)spawnShurikenBot {
     CCSprite *shuriken = (CCSprite *)[CCBReader load:@"Shuriken"];
     shuriken.positionType = CCPositionTypeNormalized;
@@ -302,6 +327,7 @@
     shuriken.physicsBody.velocity = ccp(0,-175);
 }
 
+// Swipe Left = move blue balloon 1 spot to the left
 - (void)swipeLeft {
     if (_tutorial) {
         [_moveBlue removeFromParent];
@@ -309,13 +335,15 @@
         [self schedule:@selector(timer) interval:1.f];
         _tutorial = false;
     }
-    
+
     [self startMode];
     
     if (_blue.position.x - 0.2 >= 0.09) {
         _blue.position = ccp(_blue.position.x - 0.2, _blue.position.y);
     }
 }
+
+// Swipe Right = move blue balloon 1 spot to the right
 - (void)swipeRight {
     if (_tutorial) {
         [_moveBlue removeFromParent];
@@ -330,6 +358,8 @@
         _blue.position = ccp(_blue.position.x + 0.2, _blue.position.y);
     }
 }
+
+// Swipe Down = move green balloon 1 spot down
 - (void)swipeDown {
     if (_tutorial) {
         [_moveGreen removeFromParent];
@@ -344,6 +374,8 @@
         _green.position = ccp(_green.position.x, _green.position.y - 0.1);
     }
 }
+
+// Swipe Up = move green balloon 1 spot up
 - (void)swipeUp {
     if (_tutorial) {
         [_moveGreen removeFromParent];
@@ -359,6 +391,7 @@
     }
 }
 
+// Start new difficulty mode at specific time (Look at timer method)
 - (void)startMode {
     if (_both) {
         [self startBoth];
@@ -423,6 +456,7 @@
 
 // ***************************************************************
 
+// Schedule to spawn shurikens
 - (void)startSchedule {
     if (_fastTop) {
         [self schedule:@selector(spawnShurikenTop) interval:0.75f];
@@ -435,18 +469,32 @@
     }
 }
 
+// Collision between green balloon and shuriken
 - (BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair *)pair green:(CCSprite *)balloon shuriken:(CCSprite *)shuriken {
+    [self setScore];
     [self explode:_green];
     
     return TRUE;
 }
 
+// Collision between blue balloon and shuriken
 - (BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair *)pair blue:(CCSprite *)balloon shuriken:(CCSprite *)shuriken {
+    [self setScore];
     [self explode:_blue];
     
     return TRUE;
 }
 
+// Set the score
+- (void)setScore {
+    NSUserDefaults *gameState = [NSUserDefaults standardUserDefaults];
+    [gameState setInteger:_score forKey:@"score"];
+    if ([gameState integerForKey:@"score"] > [gameState integerForKey:@"highscore"]) {
+        [gameState setInteger:_score forKey:@"highscore"];
+    }
+}
+
+// Add explosion when shuriken hits a balloon
 - (void)explode:(CCSprite *)balloon {
     CCSprite *explosion = (CCSprite *)[CCBReader load:@"Explosion"];
     explosion.positionType = CCPositionTypeNormalized;
@@ -462,13 +510,16 @@
     [explosion removeFromParent];
 }
 
+// Collision between wall and shuriken
 - (BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair *)pair shuriken:(CCSprite *)shuriken ground:(CCNode *)ground {
     [shuriken removeFromParent];
     
     return TRUE;
 }
 
+// Timer system
 - (void)timer {
+    // Add score
     _score++;
     _scoreLabel.string = [NSString stringWithFormat:@"%i", _score];
     
@@ -491,15 +542,12 @@
     
     // Difficulty Lv 3: Both sides
     else if (_score == 36) {
-//        [self unschedule:@selector(timer)];
+        [self unschedule:@selector(timer)];
         [_coverBot removeFromParent];
-//        _moveBoth.visible = true;
-//        _both = true;
+        _moveBoth.visible = true;
+        _both = true;
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeUp];
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeDown];
-        [self unschedule:@selector(timer)];
-        _startTripleTop = true;
-        _tripleTopLabel.visible = true;
     }
     
     else if (_score == 53) {
@@ -564,15 +612,17 @@
     }
 }
 
+// Present recap scene once the player loses
 - (void)recap {
+    // No longer listening to the gesture recognizer
     [[[CCDirector sharedDirector] view] removeGestureRecognizer:_swipeUp];
     [[[CCDirector sharedDirector] view] removeGestureRecognizer:_swipeDown];
     [[[CCDirector sharedDirector] view] removeGestureRecognizer:_swipeLeft];
     [[[CCDirector sharedDirector] view] removeGestureRecognizer:_swipeRight];
     
-    CCScene *gameplayScene = [CCBReader loadAsScene:@"MainScene"];
+    CCScene *recap = [CCBReader loadAsScene:@"Recap"];
     CCTransition *transition = [CCTransition transitionFadeWithDuration:0.8f];
-    [[CCDirector sharedDirector] presentScene:gameplayScene withTransition:transition];
+    [[CCDirector sharedDirector] presentScene:recap withTransition:transition];
 }
 
 @end

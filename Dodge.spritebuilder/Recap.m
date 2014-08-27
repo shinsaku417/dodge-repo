@@ -1,19 +1,31 @@
 //
-//  MainScene.m
-//  PROJECTNAME
+//  Recap.m
+//  Dodge
 //
-//  Created by Shinsaku Uesugi on 8/26/14.
-//  Copyright (c) 2013 Apportable. All rights reserved.
+//  Created by Shinsaku Uesugi on 8/27/14.
+//  Copyright (c) 2014 Apportable. All rights reserved.
 //
 
-#import "MainScene.h"
+#import "Recap.h"
 
-@implementation MainScene {
+@implementation Recap {
+    CCLabelTTF *_scoreLabel;
+    CCLabelTTF *_highscoreLabel;
+    
     CCSprite *_green;
     CCSprite *_blue;
 }
 
-- (void)play {
+- (void)onEnter {
+    [super onEnter];
+    
+    NSUserDefaults *gameState = [NSUserDefaults standardUserDefaults];
+    
+    _scoreLabel.string = [NSString stringWithFormat:@"%li", (long)[gameState integerForKey:@"score"]];
+    _scoreLabel.string = [NSString stringWithFormat:@"%li", (long)[gameState integerForKey:@"highscore"]];
+}
+
+- (void)again {
     CCScene *gameplayScene = [CCBReader loadAsScene:@"GamePlay"];
     CCTransition *transition = [CCTransition transitionFadeWithDuration:0.8f];
     [[CCDirector sharedDirector] presentScene:gameplayScene withTransition:transition];
