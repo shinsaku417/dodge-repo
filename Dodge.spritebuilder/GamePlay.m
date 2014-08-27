@@ -20,9 +20,6 @@
     BOOL _firstTop;
     BOOL _firstBot;
     
-    CCLabelTTF *_moveGreen;
-    CCLabelTTF *_moveBlue;
-    
     CCNodeColor *_coverBot;
     
     UISwipeGestureRecognizer *_swipeUp;
@@ -30,12 +27,31 @@
     UISwipeGestureRecognizer *_swipeLeft;
     UISwipeGestureRecognizer *_swipeRight;
     
-    BOOL _doubleTop;
-    
+    // **Difficulty Modes**
     BOOL _tutorial;
-    BOOL _both;
+    CCLabelTTF *_moveGreen;
+    CCLabelTTF *_moveBlue;
     
+    BOOL _both;
     CCLabelTTF *_moveBoth;
+    
+    BOOL _doubleTop;
+    BOOL _startDouble;
+    CCLabelTTF *_doubleTopLabel;
+    
+    BOOL _doubleBot;
+    BOOL _startDoubleBoth;
+    CCLabelTTF *_doubleBothLabel;
+    
+    BOOL _fastTop;
+    BOOL _startFastTop;
+    CCLabelTTF *_fastTopLabel;
+    
+    BOOL _tripleBot;
+    BOOL _startTripleBot;
+    CCLabelTTF *_tripleBotLabel;
+    
+    // *********************
 }
 
 - (void)onEnter {
@@ -45,11 +61,23 @@
     _physicsNode.collisionDelegate = self;
     
     _score = 0;
+    
+    // **Difficulty Modes Initial Values**
     _tutorial = true;
     _both = false;
     _firstTop = true;
     _firstBot = true;
+    
     _doubleTop = false;
+    _startDouble = false;
+    
+    _doubleBot = false;
+    _startDoubleBoth = false;
+    
+    _fastTop = false;
+    _startFastTop = false;
+    // ************************
+    
     
     // Swipe Up
     _swipeUp= [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(swipeUp)];
@@ -104,7 +132,6 @@
         if (shuriken.position.y + 0.1 >= 1.04) {
             shuriken2.position = ccp(1, shuriken.position.y - 0.1);
         } else if (shuriken.position.y - 0.1 <= 0.46) {
-            NSLog(@"Hi");
             shuriken2.position = ccp(1, shuriken.position.y + 0.1);
         } else {
             int rng2 = arc4random() % 2;
@@ -121,7 +148,11 @@
     
     [_physicsNode addChild:shuriken];
     [shuriken.physicsBody applyAngularImpulse:900];
-    shuriken.physicsBody.velocity = ccp(-225,0);
+    if (_fastTop) {
+        shuriken.physicsBody.velocity = ccp(-350,0);
+    } else {
+        shuriken.physicsBody.velocity = ccp(-225,0);
+    }
 }
 
 - (void)spawnShurikenBot {
@@ -152,6 +183,27 @@
         }
     }
     
+    if (_doubleBot) {
+        CCSprite *shuriken2 = (CCSprite *)[CCBReader load:@"Shuriken"];
+        shuriken2.positionType = CCPositionTypeNormalized;
+        if (shuriken.position.x + 0.2 >= 1.09) {
+            shuriken2.position = ccp(shuriken.position.x - 0.2, 0.475);
+        } else if (shuriken.position.x - 0.2 <= -0.09) {
+            shuriken2.position = ccp(shuriken.position.x + 0.2, 0.475);
+        } else {
+            int rng2 = arc4random() % 2;
+            if (rng2 == 0) {
+                shuriken2.position = ccp(shuriken.position.x + 0.2, 0.475);
+            } else {
+                shuriken2.position = ccp(shuriken.position.x - 0.2, 0.475);
+            }
+        }
+        [_physicsNode addChild:shuriken2];
+        [shuriken2.physicsBody applyAngularImpulse:1000];
+        shuriken2.physicsBody.velocity = ccp(0,-200);
+    }
+
+    
     [_physicsNode addChild:shuriken];
     [shuriken.physicsBody applyAngularImpulse:900];
     shuriken.physicsBody.velocity = ccp(0,-175);
@@ -164,9 +216,9 @@
         [self schedule:@selector(timer) interval:1.f];
         _tutorial = false;
     }
-    if (_both) {
-        [self startBoth];
-    }
+    
+    [self startMode];
+    
     if (_blue.position.x - 0.2 >= 0.09) {
         _blue.position = ccp(_blue.position.x - 0.2, _blue.position.y);
     }
@@ -178,9 +230,9 @@
         [self schedule:@selector(timer) interval:1.f];
         _tutorial = false;
     }
-    if (_both) {
-        [self startBoth];
-    }
+    
+    [self startMode];
+    
     if (_blue.position.x + 0.2 <= 0.91) {
         _blue.position = ccp(_blue.position.x + 0.2, _blue.position.y);
     }
@@ -192,9 +244,9 @@
         [self schedule:@selector(timer) interval:1.f];
         _tutorial = false;
     }
-    if (_both) {
-        [self startBoth];
-    }
+    
+    [self startMode];
+    
     if (_green.position.y - 0.1 >= 0.54) {
         _green.position = ccp(_green.position.x, _green.position.y - 0.1);
     }
@@ -206,20 +258,69 @@
         [self schedule:@selector(timer) interval:1.f];
         _tutorial = false;
     }
-    if (_both) {
-        [self startBoth];
-    }
+    
+    [self startMode];
+    
     if (_green.position.y + 0.1 <= 0.96) {
         _green.position = ccp(_green.position.x, _green.position.y + 0.1);
     }
 }
 
+- (void)startMode {
+    if (_both) {
+        [self startBoth];
+    } else if (_startDouble) {
+        [self startDoubleTop];
+    } else if (_startDoubleBoth) {
+        [self startDoubleBoth];
+    } else if (_startFastTop) {
+        [self startFastTop];
+    }
+}
+
+// *******************Difficulty Modes************************
+
 - (void)startBoth {
     [_moveBoth removeFromParent];
-    [self schedule:@selector(spawnShurikenTop) interval:1.5f];
-    [self schedule:@selector(spawnShurikenBot) interval:1.2f];
-    [self schedule:@selector(timer) interval:1.f];
+    [self startSchedule];
     _both = false;
+}
+
+- (void)startDoubleTop {
+    [_doubleTopLabel removeFromParent];
+    [self startSchedule];
+    _doubleTop = true;
+    _startDouble = false;
+}
+
+- (void)startDoubleBoth {
+    [_doubleBothLabel removeFromParent];
+    [self startSchedule];
+    _doubleBot = true;
+    _startDoubleBoth = false;
+}
+
+- (void)startFastTop {
+    [_fastTopLabel removeFromParent];
+    _fastTop = true;
+    [self startSchedule];
+    _doubleTop = false;
+    _doubleBot = false;
+    _startFastTop = false;
+}
+
+// ***************************************************************
+
+- (void)startSchedule {
+    if (_fastTop) {
+        [self schedule:@selector(spawnShurikenTop) interval:0.75f];
+        [self schedule:@selector(spawnShurikenBot) interval:1.2f];
+        [self schedule:@selector(timer) interval:1.f];
+    } else {
+        [self schedule:@selector(spawnShurikenTop) interval:1.5f];
+        [self schedule:@selector(spawnShurikenBot) interval:1.2f];
+        [self schedule:@selector(timer) interval:1.f];
+    }
 }
 
 - (BOOL)ccPhysicsCollisionBegin:(CCPhysicsCollisionPair *)pair green:(CCSprite *)balloon shuriken:(CCSprite *)shuriken {
@@ -270,18 +371,60 @@
         
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeLeft];
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeRight];
-    } else if (_score == 36) {
+        
+    } else if (_score == 35) {
         [self unschedule:@selector(spawnShurikenBot)];
+    }
+    
+    else if (_score == 36) {
         [self unschedule:@selector(timer)];
         [_coverBot removeFromParent];
         _moveBoth.visible = true;
         _both = true;
-        
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeUp];
         [[[CCDirector sharedDirector] view] addGestureRecognizer:_swipeDown];
-
-    } else if (_score == 54) {
-        _doubleTop = true;
+    }
+    
+    else if (_score == 53) {
+        [self unschedule:@selector(spawnShurikenTop)];
+        [self unschedule:@selector(spawnShurikenBot)];
+    }
+    
+    else if (_score == 54) {
+        [self unschedule:@selector(timer)];
+        _startDouble = true;
+        _doubleTopLabel.visible = true;
+    }
+    
+    else if (_score == 71) {
+        [self unschedule:@selector(spawnShurikenTop)];
+        [self unschedule:@selector(spawnShurikenBot)];
+    }
+    
+    else if (_score == 72) {
+        [self unschedule:@selector(timer)];
+        
+        _startDoubleBoth = true;
+        
+        _doubleBothLabel.visible = true;
+    } else if (_score == 89) {
+        [self unschedule:@selector(spawnShurikenTop)];
+        [self unschedule:@selector(spawnShurikenBot)];
+        
+        _doubleBothLabel.visible = true;
+    } else if (_score == 90) {
+        [self unschedule:@selector(timer)];
+        
+        _startFastTop = true;
+        
+        _fastTopLabel.visible = true;
+    } else if (_score == 107) {
+        [self unschedule:@selector(spawnShurikenTop)];
+        [self unschedule:@selector(spawnShurikenBot)];
+        
+        _startFastTop = true;
+        
+        _fastTopLabel.visible = true;
     }
 }
 

@@ -2,7 +2,7 @@
 //  MainScene.m
 //  PROJECTNAME
 //
-//  Created by Viktor on 10/10/13.
+//  Created by Shinsaku Uesugi on 8/26/14.
 //  Copyright (c) 2013 Apportable. All rights reserved.
 //
 
