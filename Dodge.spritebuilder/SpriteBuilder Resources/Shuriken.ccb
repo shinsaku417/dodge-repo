@@ -52,7 +52,7 @@
 			<key>affectedByGravity</key>
 			<false/>
 			<key>allowsRotation</key>
-			<false/>
+			<true/>
 			<key>bodyShape</key>
 			<integer>0</integer>
 			<key>collisionCategories</key>
@@ -60,7 +60,7 @@
 			<key>collisionMask</key>
 			<array/>
 			<key>collisionType</key>
-			<string></string>
+			<string>shuriken</string>
 			<key>cornerRadius</key>
 			<real>0.0</real>
 			<key>density</key>
@@ -74,40 +74,118 @@
 			<key>points</key>
 			<array>
 				<array>
-					<real>0.0</real>
-					<real>0.0</real>
+					<real>0.34765625</real>
+					<real>19.00390625</real>
 				</array>
 				<array>
-					<real>0.0</real>
-					<real>50</real>
+					<real>12.85546875</real>
+					<real>26.00390625</real>
 				</array>
 				<array>
-					<real>6</real>
-					<real>50</real>
+					<real>15.4296875</real>
+					<real>37.42578125</real>
 				</array>
 				<array>
-					<real>6</real>
-					<real>0.0</real>
+					<real>20.640625</real>
+					<real>33.7421875</real>
+				</array>
+				<array>
+					<real>26.9296875</real>
+					<real>26.87890625</real>
+				</array>
+				<array>
+					<real>33.6953125</real>
+					<real>26.171875</real>
+				</array>
+				<array>
+					<real>40.390625</real>
+					<real>19.69140625</real>
+				</array>
+				<array>
+					<real>27.33203125</real>
+					<real>10.7734375</real>
+				</array>
+				<array>
+					<real>21.32421875</real>
+					<real>-1.19140625</real>
+				</array>
+				<array>
+					<real>13.18359375</real>
+					<real>13.87109375</real>
 				</array>
 			</array>
 			<key>polygons</key>
 			<array>
 				<array>
 					<array>
-						<real>6</real>
-						<real>0.0</real>
+						<real>12.85546875</real>
+						<real>26.00390625</real>
 					</array>
 					<array>
-						<real>6</real>
-						<real>50</real>
+						<real>0.34765625</real>
+						<real>19.00390625</real>
 					</array>
 					<array>
-						<real>0.0</real>
-						<real>50</real>
+						<real>13.18359375</real>
+						<real>13.87109375</real>
+					</array>
+				</array>
+				<array>
+					<array>
+						<real>13.18359375</real>
+						<real>13.87109375</real>
 					</array>
 					<array>
-						<real>0.0</real>
-						<real>0.0</real>
+						<real>21.32421875</real>
+						<real>-1.19140625</real>
+					</array>
+					<array>
+						<real>27.33203125</real>
+						<real>10.7734375</real>
+					</array>
+				</array>
+				<array>
+					<array>
+						<real>26.9296875</real>
+						<real>26.87890625</real>
+					</array>
+					<array>
+						<real>20.640625</real>
+						<real>33.7421875</real>
+					</array>
+					<array>
+						<real>15.4296875</real>
+						<real>37.42578125</real>
+					</array>
+					<array>
+						<real>12.85546875</real>
+						<real>26.00390625</real>
+					</array>
+				</array>
+				<array>
+					<array>
+						<real>12.85546875</real>
+						<real>26.00390625</real>
+					</array>
+					<array>
+						<real>13.18359375</real>
+						<real>13.87109375</real>
+					</array>
+					<array>
+						<real>27.33203125</real>
+						<real>10.7734375</real>
+					</array>
+					<array>
+						<real>40.390625</real>
+						<real>19.69140625</real>
+					</array>
+					<array>
+						<real>33.6953125</real>
+						<real>26.171875</real>
+					</array>
+					<array>
+						<real>26.9296875</real>
+						<real>26.87890625</real>
 					</array>
 				</array>
 			</array>
@@ -168,7 +246,7 @@
 				<key>value</key>
 				<array>
 					<string></string>
-					<string>image/arrowBot.png</string>
+					<string>image/shuriken.png</string>
 				</array>
 			</dict>
 			<dict>
