@@ -1,4 +1,4 @@
-#Double Dodge
+#Double Dodge: Ninja Balloons
 ##Divide Your Attention, and Multitask!
 
 ##Screenshots @ [http://shinuesugi.com/#double-dodge](http://shinuesugi.com/#double-dodge)
